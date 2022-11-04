@@ -14,7 +14,7 @@ class Game:
     def play_game(self):
         self.dict.check_match(self.player.letters)
         self.dict.print_matching_words()
-        print(self.dict.matches_index)
+        #print(self.dict.matches_index)
 
     def give_player_rack(self):
         count = 0
@@ -47,8 +47,6 @@ class Player:
         for letter in self.letters:
             list.append(letter)
         print(list)
-
-
 
 class Tile:
     def __init__(self, letter, val):
@@ -114,7 +112,6 @@ class Bag:
             self.bag.append(tile)
             count +=1
 
-
 class Words:
     # original holds the original word list (e.g whole words)
     # words holds the sorted into alphabetical words
@@ -145,13 +142,14 @@ class Words:
         #if true, add index to index list
     def check_match(self, letters):
         index = 0
-        count = 0
+        copy_letters = letters.copy()
         for word in self.words:
-            count += 1
-            if self.has_match(word, letters):
+
+            if self.has_match(word, copy_letters):
                 self.matches_index.append(index)
+                print(self.original[index])
+                
             index+=1
-        print(count)
     
     #if word length (word checking against) is == number of matches, there is a match
     #cycle through each letter in word, cycle through each letter in Letters (rack)
@@ -161,28 +159,24 @@ class Words:
     def has_match (self, word, letters):
         word_length = len(word)
         matches = 0
-        copy_letters = letters
+        copied_letters = letters.copy()
         for i in word:
-            for letter in copy_letters:
+            for letter in copied_letters:
+
                 if(letter == i):
-  
                     matches +=1
-                    copy_letters.remove(letter)
-
-                    break
+                    copied_letters.remove(letter)
                     
-        if matches == word_length-1:
+        if matches == word_length:
             return True
-
-
-
-
-
 
 ben = Player()
 game = Game(ben)
+print(ben.print_letters())
 
 
+# dict = Words()
+# print(dict.words[6])
 
 
 
