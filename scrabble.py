@@ -4,8 +4,16 @@ class Game:
     def __init__(self, player):
         self.player = player
         self.tiles = Bag()
+        self.dict = Words()
         self.give_player_rack()
         self.player.print_tiles()
+        self.player.sort_letters()
+        self.play_game()
+
+    def play_game(self):
+        self.dict.check_match(self.player.letters)
+        self.dict.print_matching_words()
+        print(self.dict.matches_index)
 
     def give_player_rack(self):
         count = 0
@@ -18,9 +26,7 @@ class Game:
 class Player:
     def __init__(self):
         self.rack = []
-
-    def make_rack(self):
-        some = []
+        self.letters = []
 
     def print_tiles(self):
         list = []
@@ -28,6 +34,17 @@ class Player:
             list.append(tile.to_string())
         print(list)
 
+    def sort_letters(self):
+        letters = []
+        for tile in self.rack:
+            letters.append(tile.letter)
+        self.letters = sorted(letters)
+
+    def print_letters(self):
+        list = []
+        for letter in self.letters:
+            list.append(letter)
+        print(list)
 
 
 #for each letter
@@ -39,14 +56,12 @@ class Tile:
     def to_string(self):
         return f"{self.letter}"
 
-
 class Bag:
     def __init__(self):
         self.all_tiles = []
         self.bag = []
         self.make_tiles_points_list()
         self.fill_bag()
-        
 
     def make_tiles_points_list(self):
         points_1 = list('EAIONRTLSU')
@@ -97,10 +112,66 @@ class Bag:
             count +=1
 
 
+class Words:
+    #load in the words
+    #sort each word into alphabetical
+    def __init__(self):
+        self.original = []
+        self.words = []
+        self.matches_index = []
+        self.read_in_file()
+        self.remove_first_ele()
+
+    def read_in_file(self):
+        with open('dictionary.txt', 'r') as f:
+            for line in f:
+                self.original.append(line)
+                self.words.append(sorted(line.upper()))
+    
+    def remove_first_ele(self):
+        for word in self.words:
+            word.pop(0)
+
+    def print_matching_words(self):
+        for index in self.matches_index:
+            print(self.original[index])
+
+    def check_match(self, letters):
+        index = 0
+        count = 0
+        for word in self.words:
+            count += 1
+            if self.has_match(word, letters):
+                self.matches_index.append(index)
+            index+=1
+        print(count)
+
+    def has_match (self, word, letters):
+        word_length = len(word)
+        matches = 0
+        copy_letters = letters
+        for i in word:
+            for letter in copy_letters:
+                if(letter == i):
+                    #print(i)
+                    matches +=1
+                    copy_letters.remove(letter)
+                   # print(letters)
+                    break
+                    
+        if matches == word_length-1:
+            return True
+
+
+
+
+
+
 ben = Player()
 game = Game(ben)
 
-print(len(ben.rack))
+
+
 
 
 
