@@ -1,5 +1,6 @@
 import math, random
 
+# Sets up and Kicks off the game
 class Game:
     def __init__(self, player):
         self.player = player
@@ -23,6 +24,7 @@ class Game:
             self.tiles.bag.remove(tile)
             count += 1
 
+#rack is original tiles [letter + points], letters is just letters
 class Player:
     def __init__(self):
         self.rack = []
@@ -47,7 +49,7 @@ class Player:
         print(list)
 
 
-#for each letter
+
 class Tile:
     def __init__(self, letter, val):
         self.letter = letter
@@ -56,6 +58,7 @@ class Tile:
     def to_string(self):
         return f"{self.letter}"
 
+#fills bag of tiles
 class Bag:
     def __init__(self):
         self.all_tiles = []
@@ -113,8 +116,9 @@ class Bag:
 
 
 class Words:
-    #load in the words
-    #sort each word into alphabetical
+    # original holds the original word list (e.g whole words)
+    # words holds the sorted into alphabetical words
+    # matches_index will reference original 
     def __init__(self):
         self.original = []
         self.words = []
@@ -136,6 +140,9 @@ class Words:
         for index in self.matches_index:
             print(self.original[index])
 
+    #cycles through each word(sorted_list) in words
+    #checks for a match against word and letter
+        #if true, add index to index list
     def check_match(self, letters):
         index = 0
         count = 0
@@ -145,7 +152,12 @@ class Words:
                 self.matches_index.append(index)
             index+=1
         print(count)
-
+    
+    #if word length (word checking against) is == number of matches, there is a match
+    #cycle through each letter in word, cycle through each letter in Letters (rack)
+    #   if letter's match up, remove letter from Letters (rack)
+    #this was my make or break function - I did not check it in isolation, rather booted the whole game to check
+    # I could get a match for 'aa' 
     def has_match (self, word, letters):
         word_length = len(word)
         matches = 0
@@ -153,10 +165,10 @@ class Words:
         for i in word:
             for letter in copy_letters:
                 if(letter == i):
-                    #print(i)
+  
                     matches +=1
                     copy_letters.remove(letter)
-                   # print(letters)
+
                     break
                     
         if matches == word_length-1:
