@@ -1,34 +1,17 @@
-import math, random
+import random
 
-# Sets up and Kicks off the game
-class Game:
-    def __init__(self, player):
-        self.player = player
-        self.tiles = Bag()
-        self.dict = Words()
-        self.give_player_rack()
-        self.player.print_tiles()
-        self.player.sort_letters()
-        self.play_game()
-
-    def play_game(self):
-        self.dict.check_match(self.player.letters)
-        self.dict.print_matching_words()
-        #print(self.dict.matches_index)
-
-    def give_player_rack(self):
-        count = 0
-        while count < 7:
-            tile = random.choice(self.tiles.bag)
-            self.player.rack.append(tile)
-            self.tiles.bag.remove(tile)
-            count += 1
-
-#rack is original tiles [letter + points], letters is just letters
+#rack is list of tiles {letter + points} 
+#letters is just [letters]
 class Player:
     def __init__(self):
         self.rack = []
         self.letters = []
+
+    def sort_letters(self):
+        letters = []
+        for tile in self.rack:
+            letters.append(tile.letter)
+        self.letters = sorted(letters)  
 
     def print_tiles(self):
         list = []
@@ -36,17 +19,12 @@ class Player:
             list.append(tile.to_string())
         print(list)
 
-    def sort_letters(self):
-        letters = []
-        for tile in self.rack:
-            letters.append(tile.letter)
-        self.letters = sorted(letters)
-
     def print_letters(self):
         list = []
         for letter in self.letters:
             list.append(letter)
         print(list)
+
 
 class Tile:
     def __init__(self, letter, val):
@@ -55,6 +33,7 @@ class Tile:
 
     def to_string(self):
         return f"{self.letter}"
+    
 
 #fills bag of tiles
 class Bag:
@@ -63,7 +42,8 @@ class Bag:
         self.bag = []
         self.make_tiles_points_list()
         self.fill_bag()
-
+    
+    #fills all_tiles list
     def make_tiles_points_list(self):
         points_1 = list('EAIONRTLSU')
         self.make_tiles_with_points(points_1, 1)
@@ -84,7 +64,7 @@ class Bag:
         for letter in list:
             self.all_tiles.append(Tile(letter, points))
 
-    def fill_bag(self):
+    def fill_bag(self): #match method
         for tile in self.all_tiles:
             if(tile.letter == 'E'):
                 self.add_x_times(tile, 12)
@@ -113,9 +93,9 @@ class Bag:
             count +=1
 
 class Words:
-    # original holds the original word list (e.g whole words)
-    # words holds the sorted into alphabetical words
-    # matches_index will reference original 
+    # original holds the original word list (e.g whole words) from dict.txt
+    # words holds the sorted listed dict in alphabetical ordered words
+    # matches_index will reference original with the matched words
     def __init__(self):
         self.original = []
         self.words = []
@@ -125,10 +105,11 @@ class Words:
 
     def read_in_file(self):
         with open('dictionary.txt', 'r') as f:
-            for line in f:
-                self.original.append(line)
-                self.words.append(sorted(line.upper()))
+            for word in f:
+                self.original.append(word)
+                self.words.append(sorted(word.upper()))
     
+    #removes '\n' from each word
     def remove_first_ele(self):
         for word in self.words:
             word.pop(0)
@@ -137,25 +118,17 @@ class Words:
         for index in self.matches_index:
             print(self.original[index])
 
-    #cycles through each word(sorted_list) in words
-    #checks for a match against word and letter
-        #if true, add index to index list
+    #cycles through all the words in dict and checks against players tiles
     def check_match(self, letters):
         index = 0
         copy_letters = letters.copy()
         for word in self.words:
-
+            #check for match between words and letters
             if self.has_match(word, copy_letters):
                 self.matches_index.append(index)
-                print(self.original[index])
-                
             index+=1
     
-    #if word length (word checking against) is == number of matches, there is a match
-    #cycle through each letter in word, cycle through each letter in Letters (rack)
-    #   if letter's match up, remove letter from Letters (rack)
-    #this was my make or break function - I did not check it in isolation, rather booted the whole game to check
-    # I could get a match for 'aa' 
+    #checks match against word in dict and the letters the player holds -> returns T/F
     def has_match (self, word, letters):
         word_length = len(word)
         matches = 0
@@ -166,17 +139,41 @@ class Words:
                 if(letter == i):
                     matches +=1
                     copied_letters.remove(letter)
-                    
+        
         if matches == word_length:
             return True
+
+
+# Sets up and Kicks off the game
+class Game:
+    def __init__(self, player):
+        self.player = player
+        self.tiles = Bag()
+        self.dict = Words()
+        self.give_player_rack()
+        self.play_game()
+
+    def play_game(self):
+        self.dict.check_match(self.player.letters)
+        self.dict.print_matching_words()
+
+    def give_player_rack(self):
+        count = 0
+        while count < 7:
+            tile = random.choice(self.tiles.bag)
+            self.player.rack.append(tile)
+            self.tiles.bag.remove(tile)
+            count += 1
+        self.player.print_tiles()
+        self.player.sort_letters()
+        
+
 
 ben = Player()
 game = Game(ben)
 print(ben.print_letters())
 
 
-# dict = Words()
-# print(dict.words[6])
 
 
 
